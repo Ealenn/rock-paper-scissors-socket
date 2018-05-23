@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <title>Rock Paper Scissors</title>
+</head>
+<body>
+
+    <div id="app">
+        <v-app>
+            <v-content>
+                <v-container grid-list-md text-xs-center>
+                    <v-layout row wrap>
+
+                        <!-- TOP -->
+                        <v-flex xs12 sm6>
+                            <v-card color="primary">
+                                    <v-toolbar color="light-blue" dark flat>
+                                        <v-toolbar-title>Score</v-toolbar-title>
+                                        <v-spacer></v-spacer>
+                                    </v-toolbar>
+                                    <v-list two-line subheader>
+                                        <v-list-tile v-for="player in game.player">
+                                            <v-list-tile-avatar>
+                                                <v-icon class="grey lighten-1 white--text">star</v-icon>
+                                            </v-list-tile-avatar>
+                                            <v-list-tile-content>
+                                                <v-list-tile-title>{{ player.pseudo }}</v-list-tile-title>
+                                                <v-list-tile-sub-title>{{ player.point }}</v-list-tile-sub-title>
+                                            </v-list-tile-content>
+                                        </v-list-tile>
+                                    </v-list>
+                            </v-card>
+                        </v-flex>
+
+                        <v-flex sm6 class="hidden-xs-only">
+                            <v-card color="primary">
+                                    <v-toolbar color="light-blue" dark flat>
+                                        <v-toolbar-title>All Party</v-toolbar-title>
+                                        <v-spacer></v-spacer>
+                                    </v-toolbar>
+                                    <v-list two-line subheader>
+                                        <v-list-tile>
+                                            <v-list-tile-avatar>
+                                                <v-icon class="grey lighten-1 white--text">group</v-icon>
+                                            </v-list-tile-avatar>
+                                            <v-list-tile-content>
+                                                <v-list-tile-title>{{ stats.players || 0 }}</v-list-tile-title>
+                                                <v-list-tile-sub-title>players online</v-list-tile-sub-title>
+                                            </v-list-tile-content>
+                                        </v-list-tile>
+                                        <v-list-tile>
+                                            <v-list-tile-avatar>
+                                                <v-icon class="grey lighten-1 white--text">games</v-icon>
+                                            </v-list-tile-avatar>
+                                            <v-list-tile-content>
+                                                <v-list-tile-title>{{ stats.party || 0 }}</v-list-tile-title>
+                                                <v-list-tile-sub-title>Party active</v-list-tile-sub-title>
+                                            </v-list-tile-content>
+                                        </v-list-tile>
+                                    </v-list>
+                            </v-card>
+                        </v-flex>
+
+                        <!-- AWAIT -->
+                        <v-flex xs12 v-if="game.player.length == 1">
+                            <v-card>
+                                    <v-toolbar color="light-blue" dark flat>
+                                        <v-toolbar-title>Waiting for player</v-toolbar-title>
+                                        <v-spacer></v-spacer>
+                                    </v-toolbar>
+                                    
+                                    <v-card-media src="/img/email.png" height="200px"></v-card-media>
+
+                                    <v-card-title primary-title>
+                                        <div style="margin:auto">
+                                            <h3 class="headline">No player has joined you.</h3>
+                                            <div class="text-xs-center">To invite a friend, copy the link below or share it with the social buttons.</div>
+                                            <div class="text-xs-center">Warning, if you refresh or close the page a new link will be generated.</div>
+                                            <div class="text-xs-center">
+                                                <a :href="sharedLink" target="_BLANC">{{ sharedLink }}</a>
+                                            </div>
+                                            <div>
+                                                <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + sharedLink" target="_BLANC" style="text-decoration: none">
+                                                    <v-btn style="background:#3b5999" class="white--text">Facebook</v-btn>
+                                                </a>
+                                                <a :href="'https://twitter.com/home?status=' + sharedLink" target="_BLANC" style="text-decoration: none">
+                                                    <v-btn style="background:#55acee" class="white--text">Twitter</v-btn>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </v-card-title>
+                                    <p>
+                                    </p>
+                            </v-card>
+                        </v-flex>
+
+                        <!-- GAME -->
+                        <v-flex xs12 v-if="game.player.length == 2">
+                            <v-card>
+                                    <v-toolbar color="light-green" dark flat>
+                                        <v-toolbar-title>Game</v-toolbar-title>
+                                        <v-spacer></v-spacer>
+                                    </v-toolbar>
+
+                                    <!-- AWAIT/CONTINUE -->
+                                    <div class="mt-5 mb-5">
+                                            <h3>Waiting for your opponent</h3>
+                                            <v-layout row wrap>
+                                                <v-flex xs6 v-for="player in game.player">
+                                                    <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="myPseudo == player.pseudo">Me</v-chip></h3>
+                                                    <v-icon style="font-size: 7em" v-if="myPseudo == player.pseudo">fas fa-question</v-icon>
+                                                    <v-icon style="font-size: 7em" v-else>{{ blinkIcon }}</v-icon>
+                                                </v-flex>
+
+                                                <v-flex xs12 class="mt-5" v-if="showContinue">
+                                                    <h2>n</h2>
+                                                    <v-btn depressed large>CONTINUE</v-btn>
+                                                </v-flex>
+                                            </v-layout>
+                                    </div>
+                                    
+                                    <!-- ACTION -->
+                                    <div class="pb-3 pt-3" v-if="showAction">
+
+                                        <h2 class="mb-2">Choose an action</h2>
+
+                                        <v-btn
+                                        large
+                                        depressed
+                                        color="blue"
+                                        class="white--text"
+                                        >
+                                            Rock
+                                            <v-icon right dark>far fa-hand-rock</v-icon>
+                                        </v-btn>
+
+                                        <v-btn
+                                        large
+                                        depressed
+                                        color="blue"
+                                        class="white--text"
+                                        >
+                                        Paper
+                                            <v-icon right dark>far fa-hand-paper</v-icon>
+                                        </v-btn>
+
+                                        <v-btn
+                                        large
+                                        depressed
+                                        color="blue"
+                                        class="white--text"
+                                        >
+                                            Scissors
+                                            <v-icon right dark>far fa-hand-scissors</v-icon>
+                                        </v-btn>
+                                    </div>
+                                    
+                                </v-card>
+                            </v-flex>
+                    </v-layout>
+                </v-container>
+            </v-content>
+        </v-app>
+
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
+    <script>
+        var server = 'http://localhost:8080'
+        var socket = io.connect(server)
+
+        var App = new Vue({
+        el: '#app',
+            data: {
+                myPseudo: "",
+                blinkIcon: "",
+                game: {},
+                stats: {},
+                showContinue: false,
+                showAction: true,
+                continueText: ""
+            },
+            computed: {
+                sharedLink: function() {
+                    return 'http://localhost:8080/' + this.game.session
+                }
+            }
+        })
+
+        // Blink Icon
+        var i = 0
+        var icon = ['far fa-hand-rock', 'far fa-hand-paper', 'far fa-hand-scissors', 'fas fa-question']
+        var funcChangeIcon = function () {
+            if (i >= icon.length - 1) {
+                i = 0
+            } else {
+                i++
+            }
+            App.$data.blinkIcon = icon[i]
+            setTimeout(function () {funcChangeIcon()}, 100)
+        }
+        funcChangeIcon()
+
+        // Socket
+        <% if (session) { %>
+        socket.emit('join', {
+            session: "<%= session %>"
+        })
+        <% } %>
+
+        socket.on('connected', function (data) {
+            App.$data.game = data
+        })
+
+        socket.on('yourPseudo', function ({pseudo}) {
+            App.$data.myPseudo = pseudo
+        })
+
+        socket.on('stats', function (data) {
+            App.$data.stats = data
+        })
+
+    </script>
+
+
+<script>
+
+        </script>
+</body>
+</html>

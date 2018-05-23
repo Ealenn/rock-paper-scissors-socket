@@ -1,22 +1,41 @@
 class Game {
-    constructor(idSession) {
+    constructor(idSession, idPlayer) {
         this.session = idSession
-        this.player = 1
+        this.players = []
+        this.players.push({
+            pseudo : idPlayer,
+            choice : null,
+            point: 0
+        })
         console.log('New session : ', this.session)
     }
 
-    playerJoin() {
-        this.player ++
+    getSumPlayers() {
+        return this.players.length
     }
 
-    playerLeft() {
-        this.player --
+    playerJoin(idPlayer) {
+        console.log('Player Join')
+        this.players.push({
+            pseudo : idPlayer,
+            choice: null,
+            point: 0
+        })
+    }
+
+    playerLeft(idPlayer) {
+        console.log('Player Left')
+        this.players = this.players.filter((player) => {
+            player.point = 0
+            player.choice = null
+            return player.pseudo != idPlayer
+        })
     }
 
     toJson() {
         return {
             session: this.session,
-            player: this.player
+            player: this.players
         }
     }
 }

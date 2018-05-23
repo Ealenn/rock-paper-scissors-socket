@@ -1,70 +1,67 @@
-const app = require('express')()
-const server = require('http').Server(app)
+const expressjs = require('express')
+const express = expressjs()
+const server = require('http').Server(express)
 const io = require('socket.io')(server)
 
-const CoreGame = require('./core/game')
+const CoreApp = require('./core/app')
 const CoreTools = require('./core/tools')
-let ArrayGames = []
+
+let App = new CoreApp()
+
+/* Express Config */
+express.set('view engine', 'ejs')
+express.use(expressjs.static('public'))
 
 /* RUN */
 let PORT = process.env.PORT || 8080
 server.listen(PORT)
-console.log('Express listen on PORT : ', PORT)
+console.log('Server START on http://localhost:', PORT)
 
 /* HTTP */
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/public/index.html');
+express.get('/', function (req, res) {
+  res.render('index', {session: undefined})
 });
+express.get('/:session', function (req, res) {
+  res.render('index', {
+    session: req.params.session
+  })
+});
+
+/* STATS */
+function sendStats () {
+    io.emit('stats', {
+        party: App.getSumGames(),
+        players: App.getSumPlayers()
+    })
+    setTimeout(() => { sendStats() }, 5000)
+} 
+sendStats ();
 
 /* SOCKET */
 io.on('connection', function (socket) {
   // Generate Game
-  let id = CoreTools.uniqueId()
-  ArrayGames.push(new CoreGame(id))
-  socket.join(id)
+  let idSession = CoreTools.uniqueId()
+  let idPlayer = CoreTools.uniqueId()
 
-  // Send connected
-  ArrayGames.forEach(element => {
-    if(element.session == id) {
-        socket.emit('connected', element.toJson())
-    }
-  })
+  App.newChannel(io, socket, idSession, idPlayer)
+  socket.emit('yourPseudo', {pseudo: idPlayer})
 
   // Disconnect
   socket.on('disconnect', function(){ 
-    ArrayGames.forEach(element => {
-        if(element.session == id) {
-            console.log('Player left : ', element.session)
-            element.playerLeft()
-            io.in(element.session).emit('connected', element.toJson())
-        }
-    })
+    App.disconnect(io, socket, idSession, idPlayer)
   });
 
   // Join game
-  socket.on('join', (data) => {
-    // Find session
-    let find = ArrayGames.find(function(element) {
-        return element.session == data.session;
-    });
+  socket.on('join', ({session}) => {
+      let isSuccess = App.joinChannel(io, socket, idSession, session, idPlayer)
+      if(isSuccess) {
+        idSession = session
+      }
+  });
 
-    if(find && find.player < 2) {
-        socket.join(data.session)
-        console.log('Join session : ', data.session)
-        // Remove old session
-        ArrayGames = ArrayGames.filter(function(el) {
-            return el.id !== id && el.player > 0;
-        })
-
-        // Add player
-        ArrayGames.forEach(element => {
-            if(element.session == data.session) {
-                id = element.session
-                element.playerJoin()
-                io.in(element.session).emit('connected', element.toJson())
-            }
-        });
-    }
+  // Choice
+  socket.on('choice', ({choice}) => {
+      App.setChoice(io, socket, idSession, idPlayer, choice)
   });
 
 });

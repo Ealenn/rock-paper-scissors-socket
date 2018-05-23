@@ -9,6 +9,7 @@
   "author": "Rudy Marchandise",
   "license": "ISC",
   "dependencies": {
+    "ejs": "^2.6.1",
     "express": "^4.16.3",
     "socket.io": "^2.1.1"
   }
