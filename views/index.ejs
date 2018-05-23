@@ -14,6 +14,14 @@
     <div id="app">
         <v-app>
             <v-content>
+                <v-snackbar
+                    timeout="2000"
+                    color="info"
+                    bottom="true"
+                    v-model="snackbar"
+                >
+                {{ haveChoice.player }} have played
+                </v-snackbar>
                 <v-container grid-list-md text-xs-center>
                     <v-layout row wrap>
 
@@ -200,6 +208,8 @@
                 game: {},
                 stats: {},
                 showAction: true,
+                haveChoice: {},
+                snackbar: false,
                 results: {}
             },
             methods: {
@@ -259,8 +269,8 @@
         })
 
         socket.on('haveChoice', function (data) {
-            // App.$data.results = data
-            console.log('have choice', data)
+            App.$data.haveChoice = data
+            App.$data.snackbar = true
         })
 
         socket.on('results', function (data) {
