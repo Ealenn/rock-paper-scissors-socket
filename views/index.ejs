@@ -109,18 +109,29 @@
                                     </v-toolbar>
 
                                     <!-- AWAIT/CONTINUE -->
-                                    <div class="mt-5 mb-5">
-                                            <h3>Waiting for your opponent</h3>
+                                    <div class="mt-5 mb-5" v-if="!showAction">
+                                            <h3 v-if="!results.win">Waiting for your opponent</h3>
                                             <v-layout row wrap>
-                                                <v-flex xs6 v-for="player in game.player">
+
+                                                <v-flex xs6 v-for="player in results.player" v-if="results.win">
                                                     <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="myPseudo == player.pseudo">Me</v-chip></h3>
-                                                    <v-icon style="font-size: 7em" v-if="myPseudo == player.pseudo">fas fa-question</v-icon>
+                                                    <v-icon style="font-size: 7em">{{ getIcon(player.choice) }}</v-icon>
+                                                </v-flex>
+
+                                                <v-flex xs6 v-for="player in game.player" v-if="!results.win">
+                                                    <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="myPseudo == player.pseudo">Me</v-chip></h3>
+                                                    <v-icon style="font-size: 7em" v-if="myPseudo == player.pseudo">{{ getIcon(myChoice) }}</v-icon>
                                                     <v-icon style="font-size: 7em" v-else>{{ blinkIcon }}</v-icon>
                                                 </v-flex>
 
-                                                <v-flex xs12 class="mt-5" v-if="showContinue">
-                                                    <h2>n</h2>
-                                                    <v-btn depressed large>CONTINUE</v-btn>
+                                                <v-flex xs12 class="mt-5" v-if="results.win">
+                                                    <h1>
+                                                        <v-icon>fas fa-trophy</v-icon>
+                                                        {{ results.win }}
+                                                        <v-icon>fas fa-trophy</v-icon>
+                                                    </h1>
+                                                    <h2>{{ results.result }}</h2>
+                                                    <v-btn depressed large @click="setContinue()">CONTINUE</v-btn>
                                                 </v-flex>
                                             </v-layout>
                                     </div>
@@ -135,6 +146,7 @@
                                         depressed
                                         color="blue"
                                         class="white--text"
+                                        @click="setChoice(0)"
                                         >
                                             Rock
                                             <v-icon right dark>far fa-hand-rock</v-icon>
@@ -145,6 +157,7 @@
                                         depressed
                                         color="blue"
                                         class="white--text"
+                                        @click="setChoice(1)"
                                         >
                                         Paper
                                             <v-icon right dark>far fa-hand-paper</v-icon>
@@ -155,6 +168,7 @@
                                         depressed
                                         color="blue"
                                         class="white--text"
+                                        @click="setChoice(2)"
                                         >
                                             Scissors
                                             <v-icon right dark>far fa-hand-scissors</v-icon>
@@ -181,12 +195,28 @@
         el: '#app',
             data: {
                 myPseudo: "",
+                myChoice: 3,
                 blinkIcon: "",
                 game: {},
                 stats: {},
-                showContinue: false,
                 showAction: true,
-                continueText: ""
+                results: {}
+            },
+            methods: {
+                setChoice: function (choice) {
+                    socket.emit('choice', {choice})
+                    this.myChoice = choice
+                    this.showAction = false
+                },
+                setContinue: function () {
+                    this.myChoice = 3
+                    this.results = {}
+                    this.showAction = true
+                },
+                getIcon: function (choice) {
+                    var icon = ['far fa-hand-rock', 'far fa-hand-paper', 'far fa-hand-scissors', 'fas fa-question']
+                    return icon[choice]
+                }
             },
             computed: {
                 sharedLink: function() {
@@ -226,6 +256,16 @@
 
         socket.on('stats', function (data) {
             App.$data.stats = data
+        })
+
+        socket.on('haveChoice', function (data) {
+            // App.$data.results = data
+            console.log('have choice', data)
+        })
+
+        socket.on('results', function (data) {
+            App.$data.results = data
+            App.$data.showContinue = true
         })
 
     </script>

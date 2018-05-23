@@ -62,7 +62,13 @@ class App {
 
     /* Choice */
     setChoice(io, socket, idSession, idPlayer, choice) {
+        var endGame = this.ArrayGames[idSession].playerAction(idPlayer, choice)
+        io.in(idSession).emit('haveChoice', {player: idPlayer})
 
+        if (endGame) {
+            io.in(idSession).emit('results', this.ArrayGames[idSession].getResults())
+            this.connected(io, this.ArrayGames[idSession])
+        }
     }
 
 }
