@@ -34,7 +34,7 @@ function sendStats () {
         players: App.getSumPlayers()
     })
     setTimeout(() => { sendStats() }, 5000)
-} 
+}
 sendStats ();
 
 /* SOCKET */
@@ -44,7 +44,13 @@ io.on('connection', function (socket) {
   let idPlayer = CoreTools.uniqueId()
 
   App.newChannel(io, socket, idSession, idPlayer)
-  socket.emit('yourPseudo', {pseudo: idPlayer})
+  socket.emit('yourID', {pseudo: idPlayer, idPlayer})
+
+  // Pseudo
+  socket.on('changePseudo', function ({ pseudo }) {
+    App.changePseudo(io, socket, idSession, idPlayer, pseudo)
+    socket.emit('yourID', {pseudo, idPlayer})
+  })
 
   // Disconnect
   socket.on('disconnect', function(){ 

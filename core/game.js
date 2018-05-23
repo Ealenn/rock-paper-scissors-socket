@@ -7,6 +7,7 @@ class Game {
         this.session = idSession
         this.players = []
         this.players.push({
+            idPlayer,
             pseudo : idPlayer,
             choice : null,
             point: 0
@@ -16,6 +17,24 @@ class Game {
 
     getSumPlayers() {
         return this.players.length
+    }
+
+    getPseudo(idPlayer) {
+        var pseudo = ''
+        this.players.forEach(player => {
+            if (idPlayer == player.idPlayer) {
+                pseudo = player.pseudo
+            }
+        });
+        return pseudo
+    }
+
+    changePseudo(idPlayer, pseudo) {
+        this.players.forEach(player => {
+            if(player.idPlayer == idPlayer) {
+                player.pseudo = pseudo
+            }
+        });
     }
 
     getResults() {
@@ -37,12 +56,12 @@ class Game {
                         results.win = "Egality !"
                     break;
                     case PAPER:
-                        this.playerWin(localPlayer[1].pseudo)
+                        this.playerWin(localPlayer[1].idPlayer)
                         results.win = localPlayer[1].pseudo
                         results.result = 'The sheet covers the stone'
                     break;
                     case SCISSORS:
-                        this.playerWin(localPlayer[0].pseudo)
+                        this.playerWin(localPlayer[0].idPlayer)
                         results.win = localPlayer[0].pseudo
                         results.result = 'The stone breaks the scissors'
                     break;
@@ -51,7 +70,7 @@ class Game {
             case PAPER:
                 switch (localPlayer[1].choice) {
                     case ROCK:
-                        this.playerWin(localPlayer[0].pseudo)
+                        this.playerWin(localPlayer[0].idPlayer)
                         results.win = localPlayer[0].pseudo
                         results.result = 'The sheet covers the stone'
                     break;
@@ -60,7 +79,7 @@ class Game {
                         results.win = "Egality !"
                     break;
                     case SCISSORS:
-                        this.playerWin(localPlayer[1].pseudo)
+                        this.playerWin(localPlayer[1].idPlayer)
                         results.win = localPlayer[1].pseudo
                         results.result = 'Scissors cut the sheet'
                     break;
@@ -69,13 +88,13 @@ class Game {
             case SCISSORS:
                 switch (localPlayer[1].choice) {
                     case ROCK:
-                        this.playerWin(localPlayer[1].pseudo)
+                        this.playerWin(localPlayer[1].idPlayer)
                         results.win = localPlayer[1].pseudo
                         results.result = 'The stone breaks the scissors'
                     break;
                     case PAPER:
-                        this.playerWin(localPlayer[0].pseudo)
-                        results.win = localPlayer[0].pseudo
+                        this.playerWin(localPlayer[0].idPlayer)
+                        results.win = localPlayer[0].idPlayer
                         results.result = 'Scissors cut the sheet'
                     break;
                     case SCISSORS:
@@ -92,7 +111,7 @@ class Game {
     playerWin(idPlayer) {
         this.players.forEach(player => {
             player.choice = null
-            if(player.pseudo == idPlayer) {
+            if(player.idPlayer == idPlayer) {
                 player.point ++
             }
         });
@@ -107,7 +126,7 @@ class Game {
     playerAction(idPlayer, action) {
         var endGame = true
         this.players.forEach(player => {
-            if(player.pseudo == idPlayer) {
+            if(player.idPlayer == idPlayer) {
                 player.choice = action
             }
 
@@ -122,6 +141,7 @@ class Game {
     playerJoin(idPlayer) {
         console.log('Player Join')
         this.players.push({
+            idPlayer,
             pseudo : idPlayer,
             choice: null,
             point: 0
@@ -133,7 +153,7 @@ class Game {
         this.players = this.players.filter((player) => {
             player.point = 0
             player.choice = null
-            return player.pseudo != idPlayer
+            return player.idPlayer != idPlayer
         })
     }
 

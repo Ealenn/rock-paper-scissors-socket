@@ -14,14 +14,55 @@
     <div id="app">
         <v-app>
             <v-content>
+                <!-- Notification -->
                 <v-snackbar
-                    timeout="2000"
+                    :timeout="2000"
                     color="info"
-                    bottom="true"
+                    :bottom="true"
                     v-model="snackbar"
                 >
-                {{ haveChoice.player }} have played
+                {{ haveChoice.pseudo }} have played
                 </v-snackbar>
+
+                <!-- Pseudo-->
+                <v-dialog v-model="dialogPseudo" max-width="500px" persistent>
+                    <v-card text-xs-center>
+                        <v-card-media
+                            src="/img/joystick.png"
+                            height="200px"
+                        >
+                        </v-card-media>
+                        <v-card-title>
+                            <h3>Choose your username</h3>
+                        </v-card-title>
+
+                        <v-card-text style="padding-top:0">
+                                <v-form ref="form" v-model="validPseudo" v-on:submit.prevent="changePseudo()" lazy-validation>
+                                    <v-text-field
+                                        v-model="myPseudo"
+                                        :rules="[v => !!v || 'Name is required', v => v.length <= 10 || 'Name must be less than 10 characters']"
+                                        counter="10"
+                                        label="Username"
+                                        required
+                                    ></v-text-field>
+                                
+                                    <div class="text-xs-center">
+                                        <v-btn
+                                            depressed
+                                            color="primary"
+                                            :disabled="!validPseudo"
+                                            @click="changePseudo()"
+                                        >
+                                            Submit
+                                        </v-btn>
+                                        <v-btn flat @click="myPseudo = ''">Clear</v-btn>
+                                    </div>
+                                </v-form>
+                        </v-card-text>
+                    </v-card>
+                </v-dialog>
+
+                <!-- Game -->
                 <v-container grid-list-md text-xs-center>
                     <v-layout row wrap>
 
@@ -83,23 +124,38 @@
                                         <v-spacer></v-spacer>
                                     </v-toolbar>
                                     
-                                    <v-card-media src="/img/email.png" height="200px"></v-card-media>
-
                                     <v-card-title primary-title>
                                         <div style="margin:auto">
+
+                                            <div>
+                                                <img src="/img/spinner.gif" />
+                                                <h4>Waiting for the player</h4>
+                                            </div>
+
+                                            <hr>
+
                                             <h3 class="headline">No player has joined you.</h3>
                                             <div class="text-xs-center">To invite a friend, copy the link below or share it with the social buttons.</div>
                                             <div class="text-xs-center">Warning, if you refresh or close the page a new link will be generated.</div>
                                             <div class="text-xs-center">
-                                                <a :href="sharedLink" target="_BLANC">{{ sharedLink }}</a>
+                                                    <v-tooltip top>
+                                                        <v-btn slot="activator" depressed class="btn-copy-link" :data-clipboard-text="sharedLink">{{ sharedLink }}</v-btn>
+                                                        <span>Copy to clipboard</span>
+                                                    </v-tooltip>
                                             </div>
-                                            <div>
+
+                                            <div class="mt-3">
                                                 <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + sharedLink" target="_BLANC" style="text-decoration: none">
-                                                    <v-btn style="background:#3b5999" class="white--text">Facebook</v-btn>
+                                                    <v-btn depressed style="background:#3b5999" class="white--text">Facebook</v-btn>
                                                 </a>
                                                 <a :href="'https://twitter.com/home?status=' + sharedLink" target="_BLANC" style="text-decoration: none">
-                                                    <v-btn style="background:#55acee" class="white--text">Twitter</v-btn>
+                                                    <v-btn depressed style="background:#55acee" class="white--text">Twitter</v-btn>
                                                 </a>
+                                                
+                                                <v-tooltip top>
+                                                    <v-btn slot="activator" depressed class="btn-copy-link white--text" :data-clipboard-text="sharedLink"  style="background:#3C3C3C">Clipboard</v-btn>
+                                                    <span>Copy to clipboard</span>
+                                                </v-tooltip>
                                             </div>
                                         </div>
                                     </v-card-title>
@@ -122,13 +178,13 @@
                                             <v-layout row wrap>
 
                                                 <v-flex xs6 v-for="player in results.player" v-if="results.win">
-                                                    <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="myPseudo == player.pseudo">Me</v-chip></h3>
+                                                    <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="me.idPlayer == player.idPlayer">Me</v-chip></h3>
                                                     <v-icon style="font-size: 7em">{{ getIcon(player.choice) }}</v-icon>
                                                 </v-flex>
 
                                                 <v-flex xs6 v-for="player in game.player" v-if="!results.win">
-                                                    <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="myPseudo == player.pseudo">Me</v-chip></h3>
-                                                    <v-icon style="font-size: 7em" v-if="myPseudo == player.pseudo">{{ getIcon(myChoice) }}</v-icon>
+                                                    <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="me.idPlayer == player.idPlayer">Me</v-chip></h3>
+                                                    <v-icon style="font-size: 7em" v-if="me.idPlayer == player.idPlayer">{{ getIcon(myChoice) }}</v-icon>
                                                     <v-icon style="font-size: 7em" v-else>{{ blinkIcon }}</v-icon>
                                                 </v-flex>
 
@@ -195,6 +251,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
     <script>
         var server = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
         var socket = io.connect(server)
@@ -202,21 +259,32 @@
         var App = new Vue({
         el: '#app',
             data: {
+                validPseudo: true,
+                dialogPseudo: true,
                 myPseudo: "",
-                myChoice: 3,
-                blinkIcon: "",
+                
+                me: {},
                 game: {},
                 stats: {},
+                results: {},
+
+                myChoice: 3,
                 showAction: true,
                 haveChoice: {},
                 snackbar: false,
-                results: {}
+                blinkIcon: ""
             },
             methods: {
                 setChoice: function (choice) {
                     socket.emit('choice', {choice})
                     this.myChoice = choice
                     this.showAction = false
+                },
+                changePseudo: function () {
+                    if (this.$refs.form.validate()) {
+                        this.dialogPseudo = false
+                        socket.emit('changePseudo', {pseudo: this.myPseudo})
+                    }
                 },
                 setContinue: function () {
                     this.myChoice = 3
@@ -234,6 +302,16 @@
                 }
             }
         })
+
+        // btn copy link
+        var clipboard = new ClipboardJS('.btn-copy-link');
+        clipboard.on('success', function(e) {
+            console.info('Action:', e.action);
+            console.info('Text:', e.text);
+            console.info('Trigger:', e.trigger);
+
+            e.clearSelection();
+        });
 
         // Blink Icon
         var i = 0
@@ -258,10 +336,11 @@
 
         socket.on('connected', function (data) {
             App.$data.game = data
+            console.log(data)
         })
 
-        socket.on('yourPseudo', function ({pseudo}) {
-            App.$data.myPseudo = pseudo
+        socket.on('yourID', function (data) {
+            App.$data.me = data
         })
 
         socket.on('stats', function (data) {
@@ -269,6 +348,7 @@
         })
 
         socket.on('haveChoice', function (data) {
+            console.log(data)
             App.$data.haveChoice = data
             App.$data.snackbar = true
         })
@@ -279,10 +359,5 @@
         })
 
     </script>
-
-
-<script>
-
-        </script>
 </body>
 </html>

@@ -18,6 +18,12 @@ class App {
         return num
     }
 
+    /* Pseudo */
+    changePseudo(io, socket, idSession, idPlayer, pseudo) {
+        this.ArrayGames[idSession].changePseudo(idPlayer, pseudo)
+        this.connected(io, this.ArrayGames[idSession])
+    }
+
     /* Connexion */
     connected(io, game) {
         console.log('Connected : ', game.session)
@@ -63,7 +69,7 @@ class App {
     /* Choice */
     setChoice(io, socket, idSession, idPlayer, choice) {
         var endGame = this.ArrayGames[idSession].playerAction(idPlayer, choice)
-        io.in(idSession).emit('haveChoice', {player: idPlayer})
+        io.in(idSession).emit('haveChoice', {pseudo: this.ArrayGames[idSession].getPseudo(idPlayer)})
 
         if (endGame) {
             io.in(idSession).emit('results', this.ArrayGames[idSession].getResults())
