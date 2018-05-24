@@ -10,7 +10,6 @@
     <title>Rock Paper Scissors</title>
 </head>
 <body>
-
     <div id="app">
         <v-app>
             <v-content>
@@ -67,7 +66,7 @@
                     <v-layout row wrap>
 
                         <!-- TOP -->
-                        <v-flex xs12 sm6>
+                        <v-flex xs12 sm6 v-if="game.player.length == 2">
                             <v-card color="primary">
                                     <v-toolbar color="light-blue" dark flat>
                                         <v-toolbar-title>Score</v-toolbar-title>
@@ -87,7 +86,7 @@
                             </v-card>
                         </v-flex>
 
-                        <v-flex sm6 class="hidden-xs-only">
+                        <v-flex sm6 class="hidden-xs-only" v-if="game.player.length == 2">
                             <v-card color="primary">
                                     <v-toolbar color="light-blue" dark flat>
                                         <v-toolbar-title>All Party</v-toolbar-title>
@@ -128,7 +127,10 @@
                                         <div style="margin:auto">
 
                                             <div>
-                                                <img src="/img/spinner.gif" />
+                                                <v-avatar size="128px">
+                                                    <img src="/img/spinner.gif" />
+                                                  </v-avatar>
+                                                
                                                 <h4>Waiting for the player</h4>
                                             </div>
 
@@ -161,6 +163,24 @@
                                     </v-card-title>
                                     <p>
                                     </p>
+                            </v-card>
+                        </v-flex>
+
+                        <!-- QRCode -->
+                        <v-flex xs12 md6 v-if="game.player.length == 1">
+                            <v-card>
+                                    <v-toolbar color="light-blue" dark flat>
+                                        <v-toolbar-title>Invite Player with QRCode</v-toolbar-title>
+                                        <v-spacer></v-spacer>
+                                    </v-toolbar>
+                                    
+                                    <v-card-title primary-title>
+                                        <div style="margin:auto">
+                                            <canvas id="qr"></canvas>
+                                            <hr>
+                                            <h4>Scan the QRCode for play with me !</h4>
+                                        </div>
+                                    </v-card-title>
                             </v-card>
                         </v-flex>
 
@@ -252,6 +272,8 @@
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
     <script>
         var server = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
         var socket = io.connect(server)
@@ -272,7 +294,9 @@
                 showAction: true,
                 haveChoice: {},
                 snackbar: false,
-                blinkIcon: ""
+                blinkIcon: "",
+
+                qrcode: null
             },
             methods: {
                 setChoice: function (choice) {
@@ -294,6 +318,16 @@
                 getIcon: function (choice) {
                     var icon = ['far fa-hand-rock', 'far fa-hand-paper', 'far fa-hand-scissors', 'fas fa-question']
                     return icon[choice]
+                }
+            },
+            watch: {
+                game: function (val) {
+                    this.qrcode = new QRious({
+                        element: document.getElementById('qr'),
+                        level: 'H',
+                        size: 300,
+                        value: this.sharedLink
+                    });
                 }
             },
             computed: {
@@ -336,7 +370,6 @@
 
         socket.on('connected', function (data) {
             App.$data.game = data
-            console.log(data)
         })
 
         socket.on('yourID', function (data) {
