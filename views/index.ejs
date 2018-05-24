@@ -65,54 +65,18 @@
                 <v-container grid-list-md text-xs-center>
                     <v-layout row wrap>
 
-                        <!-- TOP -->
-                        <v-flex xs12 sm6 v-if="game.player.length == 2">
-                            <v-card color="primary">
-                                    <v-toolbar color="light-blue" dark flat>
-                                        <v-toolbar-title>Score</v-toolbar-title>
-                                        <v-spacer></v-spacer>
-                                    </v-toolbar>
-                                    <v-list two-line subheader>
-                                        <v-list-tile v-for="player in game.player">
-                                            <v-list-tile-avatar>
-                                                <v-icon class="grey lighten-1 white--text">star</v-icon>
-                                            </v-list-tile-avatar>
-                                            <v-list-tile-content>
-                                                <v-list-tile-title>{{ player.pseudo }}</v-list-tile-title>
-                                                <v-list-tile-sub-title>{{ player.point }}</v-list-tile-sub-title>
-                                            </v-list-tile-content>
-                                        </v-list-tile>
-                                    </v-list>
-                            </v-card>
-                        </v-flex>
-
-                        <v-flex sm6 class="hidden-xs-only" v-if="game.player.length == 2">
-                            <v-card color="primary">
-                                    <v-toolbar color="light-blue" dark flat>
-                                        <v-toolbar-title>All Party</v-toolbar-title>
-                                        <v-spacer></v-spacer>
-                                    </v-toolbar>
-                                    <v-list two-line subheader>
-                                        <v-list-tile>
-                                            <v-list-tile-avatar>
-                                                <v-icon class="grey lighten-1 white--text">group</v-icon>
-                                            </v-list-tile-avatar>
-                                            <v-list-tile-content>
-                                                <v-list-tile-title>{{ stats.players || 0 }}</v-list-tile-title>
-                                                <v-list-tile-sub-title>players online</v-list-tile-sub-title>
-                                            </v-list-tile-content>
-                                        </v-list-tile>
-                                        <v-list-tile>
-                                            <v-list-tile-avatar>
-                                                <v-icon class="grey lighten-1 white--text">games</v-icon>
-                                            </v-list-tile-avatar>
-                                            <v-list-tile-content>
-                                                <v-list-tile-title>{{ stats.party || 0 }}</v-list-tile-title>
-                                                <v-list-tile-sub-title>Party active</v-list-tile-sub-title>
-                                            </v-list-tile-content>
-                                        </v-list-tile>
-                                    </v-list>
-                            </v-card>
+                        <!-- GITHUB -->
+                        <v-flex xs12 class="text-xs-right" v-if="game.player.length == 1">
+                                <a href="https://github.com/Ealenn/rock-paper-scissors-socket" style="text-decoration: none">
+                                    <v-btn
+                                        depressed
+                                        color="grey"
+                                        class="white--text"
+                                    >
+                                        View on GitHub
+                                        <v-icon right dark>fab fa-github</v-icon>
+                                    </v-btn>
+                                </a>
                         </v-flex>
 
                         <!-- AWAIT -->
@@ -167,7 +131,7 @@
                         </v-flex>
 
                         <!-- QRCode -->
-                        <v-flex xs12 md6 v-if="game.player.length == 1">
+                        <v-flex xs12 v-if="game.player.length == 1">
                             <v-card>
                                     <v-toolbar color="light-blue" dark flat>
                                         <v-toolbar-title>Invite Player with QRCode</v-toolbar-title>
@@ -193,7 +157,7 @@
                                     </v-toolbar>
 
                                     <!-- AWAIT/CONTINUE -->
-                                    <div class="mt-5 mb-5" v-if="!showAction">
+                                    <div class="mt-5 mb-2" v-if="!showAction">
                                             <h3 v-if="!results.win">Waiting for your opponent</h3>
                                             <v-layout row wrap>
 
@@ -260,10 +224,69 @@
                                     </div>
                                     
                                 </v-card>
+                        </v-flex>
+
+                        <!-- BOTTOM -->
+                        <v-flex xs12 sm6 v-if="game.player.length == 2">
+                                <v-card color="primary">
+                                        <v-toolbar color="light-blue" dark flat>
+                                            <v-toolbar-title>Score</v-toolbar-title>
+                                            <v-spacer></v-spacer>
+                                        </v-toolbar>
+                                        <v-list two-line subheader>
+                                            <v-list-tile v-for="player in game.player">
+                                                <v-list-tile-avatar>
+                                                    <v-icon class="grey lighten-1 white--text">star</v-icon>
+                                                </v-list-tile-avatar>
+                                                <v-list-tile-content>
+                                                    <v-list-tile-title>{{ player.pseudo }}</v-list-tile-title>
+                                                    <v-list-tile-sub-title>{{ player.point }}</v-list-tile-sub-title>
+                                                </v-list-tile-content>
+                                            </v-list-tile>
+                                        </v-list>
+                                </v-card>
+                            </v-flex>
+    
+                            <v-flex sm6 v-if="game.player.length == 2">
+                                <v-card color="primary">
+                                        <v-toolbar color="light-blue" dark flat>
+                                            <v-toolbar-title>All Party</v-toolbar-title>
+                                            <v-spacer></v-spacer>
+                                        </v-toolbar>
+                                        <v-list two-line subheader>
+                                            <v-list-tile>
+                                                <v-list-tile-avatar>
+                                                    <v-icon class="grey lighten-1 white--text">group</v-icon>
+                                                </v-list-tile-avatar>
+                                                <v-list-tile-content>
+                                                    <v-list-tile-title>{{ stats.players || 0 }}</v-list-tile-title>
+                                                    <v-list-tile-sub-title>players online</v-list-tile-sub-title>
+                                                </v-list-tile-content>
+                                            </v-list-tile>
+                                            <v-list-tile>
+                                                <v-list-tile-avatar>
+                                                    <v-icon class="grey lighten-1 white--text">games</v-icon>
+                                                </v-list-tile-avatar>
+                                                <v-list-tile-content>
+                                                    <v-list-tile-title>{{ stats.party || 0 }}</v-list-tile-title>
+                                                    <v-list-tile-sub-title>Party active</v-list-tile-sub-title>
+                                                </v-list-tile-content>
+                                            </v-list-tile>
+                                        </v-list>
+                                </v-card>
                             </v-flex>
                     </v-layout>
                 </v-container>
             </v-content>
+
+            <!-- Footer -->
+            <v-footer height="auto" class="grey darken-3">
+                <v-layout row wrap justify-center>
+                    <v-flex xs12 py-3 text-xs-center white--text>
+                        &copy;2018 — <strong>Ealen</strong> - Rudy Marchandise
+                    </v-flex>
+                </v-layout>
+            </v-footer>
         </v-app>
 
     </div>
