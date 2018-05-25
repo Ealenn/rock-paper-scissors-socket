@@ -6,7 +6,11 @@ module.exports = {
         title: 'Choose your username',
         field: 'Username',
         submit: 'Submit',
-        clear: 'Clear'
+        clear: 'Clear',
+        errors: {
+            required: 'Username is required',
+            length: 'Username must be less than 10 characters'
+        }
     },
     await: {
         title: 'Waiting for player',

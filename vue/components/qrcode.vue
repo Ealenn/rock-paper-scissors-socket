@@ -1,7 +1,7 @@
 <template>
     <v-card>
             <v-toolbar color="light-blue" dark flat>
-                <v-toolbar-title>{{ title }}</v-toolbar-title>
+                <v-toolbar-title>{{ $t('qrcode.title') }}</v-toolbar-title>
                 <v-spacer></v-spacer>
             </v-toolbar>
             
@@ -9,7 +9,7 @@
                 <div style="margin:auto">
                     <canvas id="qrcode"></canvas>
                     <hr>
-                    <h4>{{ description }}</h4>
+                    <h4>{{ $t('qrcode.description') }}</h4>
                 </div>
             </v-card-title>
     </v-card>
@@ -20,8 +20,6 @@
 
   export default {
     props: {
-        title: String,
-        description: String,
         link: String
     },
     mounted() {

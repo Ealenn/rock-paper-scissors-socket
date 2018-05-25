@@ -6,7 +6,11 @@ module.exports = {
         title: 'Choisissez votre pseudo',
         field: 'Pseudo',
         submit: 'Envoyer',
-        clear: 'Effacer'
+        clear: 'Effacer',
+        errors: {
+            required: 'Nom d\'utilisateur est nécessaire',
+            length: 'Le nom d\'utilisateur doit être inférieur à 10 caractères'
+        }
     },
     await: {
         title: 'En attente d\'un joueur',

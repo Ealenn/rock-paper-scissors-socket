@@ -8,7 +8,7 @@
               :bottom="true"
               v-model="snackbar"
           >
-          {{ haveChoice.pseudo }} {{ i18n.notification.text }}
+          {{ haveChoice.pseudo }} {{ $t('notification.text') }}
           </v-snackbar>
 
           <!-- Pseudo-->
@@ -20,7 +20,7 @@
                   >
                   </v-card-media>
                   <v-card-title>
-                      <h3>{{ i18n.username.title }}</h3>
+                      <h3>{{ $t('username.title') }}</h3>
                   </v-card-title>
 
                   <v-card-text style="padding-top:0">
@@ -29,13 +29,13 @@
                           <v-container grid-list-md text-xs-center>
                               <v-layout row wrap>
                                   <v-flex xs6>
-                                          <v-btn depressed :disabled="lang == 'fr'" @click="lang = 'fr'">
+                                          <v-btn depressed :disabled="locale == 'fr'" @click="changeLocal('fr')">
                                               <span class="flag-icon flag-icon-fr mr-2"></span>
                                               Français
                                           </v-btn>
                                   </v-flex>
                                   <v-flex xs6>
-                                          <v-btn depressed :disabled="lang == 'en'" @click="lang = 'en'">
+                                          <v-btn depressed :disabled="locale == 'en'" @click="changeLocal('en')">
                                               <span class="flag-icon flag-icon-gb mr-2"></span>
                                               English
                                           </v-btn>
@@ -47,9 +47,9 @@
                           <v-form ref="form" v-model="validPseudo" v-on:submit.prevent="changePseudo()" lazy-validation>
                               <v-text-field
                                   v-model="myPseudo"
-                                  :rules="[v => !!v || 'Name is required', v => v.length <= 10 || 'Name must be less than 10 characters']"
+                                  :rules="[v => !!v || $t('username.errors.required'), v => v.length <= 10 || $t('username.errors.length')]"
                                   counter="10"
-                                  :label="i18n.username.field"
+                                  :label="$t('username.field')"
                                   required
                               ></v-text-field>
                           
@@ -60,9 +60,9 @@
                                       :disabled="!validPseudo"
                                       @click="changePseudo()"
                                   >
-                                      {{ i18n.username.submit }}
+                                      {{ $t('username.submit') }}
                                   </v-btn>
-                                  <v-btn flat @click="myPseudo = ''">{{ i18n.username.clear }}</v-btn>
+                                  <v-btn flat @click="myPseudo = ''">{{ $t('username.clear') }}</v-btn>
                               </div>
                           </v-form>
                   </v-card-text>
@@ -91,7 +91,7 @@
                   <v-flex xs12 v-if="game.player.length == 1">
                       <v-card>
                               <v-toolbar color="light-blue" dark flat>
-                                  <v-toolbar-title>{{ i18n.await.title }}</v-toolbar-title>
+                                  <v-toolbar-title>{{ $t('await.title') }}</v-toolbar-title>
                                   <v-spacer></v-spacer>
                               </v-toolbar>
                               
@@ -103,17 +103,17 @@
                                               <img src="/img/spinner.gif" />
                                             </v-avatar>
                                           
-                                          <h4>{{ i18n.await.title }}</h4>
+                                          <h4>{{ $t('await.title') }}</h4>
                                       </div>
 
                                       <hr>
 
-                                      <div class="text-xs-center">{{ i18n.await.invite }}</div>
-                                      <div class="text-xs-center">{{ i18n.await.warning }}</div>
+                                      <div class="text-xs-center">{{ $t('await.invite') }}</div>
+                                      <div class="text-xs-center">{{ $t('await.warning') }}</div>
                                       <div class="text-xs-center">
                                               <v-tooltip top>
                                                   <v-btn slot="activator" depressed class="btn-copy-link" :data-clipboard-text="sharedLink">{{ game.session }}</v-btn>
-                                                  <span>{{ i18n.await.clipboard.description }}</span>
+                                                  <span>{{ $t('await.clipboard.description') }}</span>
                                               </v-tooltip>
                                       </div>
 
@@ -126,8 +126,8 @@
                                           </a>
                                           
                                           <v-tooltip top>
-                                              <v-btn slot="activator" depressed class="btn-copy-link white--text" :data-clipboard-text="sharedLink"  style="background:#3C3C3C">{{ i18n.await.clipboard.title }}</v-btn>
-                                              <span>{{ i18n.await.clipboard.description }}</span>
+                                              <v-btn slot="activator" depressed class="btn-copy-link white--text" :data-clipboard-text="sharedLink"  style="background:#3C3C3C">{{ $t('await.clipboard.title') }}</v-btn>
+                                              <span>{{ $t('await.clipboard.description') }}</span>
                                           </v-tooltip>
                                       </div>
                                   </div>
@@ -139,29 +139,29 @@
 
                   <!-- QRCode -->
                   <v-flex xs12 v-if="game.player.length == 1">
-                      <qrcode-view :title="i18n.qrcode.title" :description="i18n.qrcode.description" :link="sharedLink"></qrcode-view>
+                      <qrcode-view :link="sharedLink"></qrcode-view>
                   </v-flex>
 
                   <!-- GAME -->
                   <v-flex xs12 v-if="game.player.length == 2">
                       <v-card>
                               <v-toolbar color="light-green" dark flat>
-                                  <v-toolbar-title>{{ i18n.game.title }}</v-toolbar-title>
+                                  <v-toolbar-title>{{ $t('game.title') }}</v-toolbar-title>
                                   <v-spacer></v-spacer>
                               </v-toolbar>
 
                               <!-- AWAIT/CONTINUE -->
                               <div class="mt-5 mb-2" v-if="!showAction">
-                                      <h3 v-if="!results.win">{{ i18n.game.waiting }}</h3>
+                                      <h3 v-if="!results.win">{{ $t('game.waiting') }}</h3>
                                       <v-layout row wrap>
 
                                           <v-flex xs6 v-for="player in results.player" v-if="results.win" v-bind:key="player.idPlayer">
-                                              <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="me.idPlayer == player.idPlayer">{{ i18n.game.me }}</v-chip></h3>
+                                              <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="me.idPlayer == player.idPlayer">{{ $t('game.me') }}</v-chip></h3>
                                               <v-icon style="font-size: 7em">{{ getIcon(player.choice) }}</v-icon>
                                           </v-flex>
 
                                           <v-flex xs6 v-for="player in game.player" v-if="!results.win" v-bind:key="player.idPlayer">
-                                              <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="me.idPlayer == player.idPlayer">{{ i18n.game.me }}</v-chip></h3>
+                                              <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="me.idPlayer == player.idPlayer">{{ $t('game.me') }}</v-chip></h3>
                                               <v-icon style="font-size: 7em" v-if="me.idPlayer == player.idPlayer">{{ getIcon(myChoice) }}</v-icon>
                                               <v-icon style="font-size: 7em" v-else>{{ blinkIcon }}</v-icon>
                                           </v-flex>
@@ -169,11 +169,11 @@
                                           <v-flex xs12 class="mt-5" v-if="results.win">
                                               <h1>
                                                   <v-icon>fas fa-trophy</v-icon>
-                                                  {{ results.win[lang] }}
+                                                  {{ results.win[locale] }}
                                                   <v-icon>fas fa-trophy</v-icon>
                                               </h1>
-                                              <h2>{{ results.result[lang] }}</h2>
-                                              <v-btn depressed large @click="setContinue()">{{ i18n.game.continue }}</v-btn>
+                                              <h2>{{ results.result[locale] }}</h2>
+                                              <v-btn depressed large @click="setContinue()">{{ $t('game.continue') }}</v-btn>
                                           </v-flex>
                                       </v-layout>
                               </div>
@@ -181,7 +181,7 @@
                               <!-- ACTION -->
                               <div class="pb-3 pt-3" v-if="showAction">
 
-                                  <h2 class="mb-2">{{ i18n.game.action.title }}</h2>
+                                  <h2 class="mb-2">{{ $t('game.action.title') }}</h2>
 
                                   <v-btn
                                   large
@@ -190,7 +190,7 @@
                                   class="white--text"
                                   @click="setChoice(0)"
                                   >
-                                      {{ i18n.game.action.rock }}
+                                      {{ $t('game.action.rock') }}
                                       <v-icon right dark>far fa-hand-rock</v-icon>
                                   </v-btn>
 
@@ -201,7 +201,7 @@
                                   class="white--text"
                                   @click="setChoice(1)"
                                   >
-                                      {{ i18n.game.action.paper }}
+                                      {{ $t('game.action.paper') }}
                                       <v-icon right dark>far fa-hand-paper</v-icon>
                                   </v-btn>
 
@@ -212,7 +212,7 @@
                                   class="white--text"
                                   @click="setChoice(2)"
                                   >
-                                      {{ i18n.game.action.scissors }}
+                                      {{ $t('game.action.scissors') }}
                                       <v-icon right dark>far fa-hand-scissors</v-icon>
                                   </v-btn>
                               </div>
@@ -224,11 +224,11 @@
                   <v-flex xs12 sm6 v-if="game.player.length == 2">
                           <v-card color="primary">
                                   <v-toolbar color="light-blue" dark flat>
-                                      <v-toolbar-title>{{ i18n.stats.score }}</v-toolbar-title>
+                                      <v-toolbar-title>{{ $t('stats.score') }}</v-toolbar-title>
                                       <v-spacer></v-spacer>
                                   </v-toolbar>
                                   <v-list two-line subheader>
-                                      <v-list-tile v-for="player in game.player">
+                                      <v-list-tile v-for="player in game.player" v-bind:key="player.idPlayer">
                                           <v-list-tile-avatar>
                                               <v-icon class="grey lighten-1 white--text">star</v-icon>
                                           </v-list-tile-avatar>
@@ -244,7 +244,7 @@
                       <v-flex sm6 v-if="game.player.length == 2">
                           <v-card color="primary">
                                   <v-toolbar color="light-blue" dark flat>
-                                      <v-toolbar-title>{{ i18n.stats.allparty }}</v-toolbar-title>
+                                      <v-toolbar-title>{{ $t('stats.allparty') }}</v-toolbar-title>
                                       <v-spacer></v-spacer>
                                   </v-toolbar>
                                   <v-list two-line subheader>
@@ -254,7 +254,7 @@
                                           </v-list-tile-avatar>
                                           <v-list-tile-content>
                                               <v-list-tile-title>{{ stats.players || 0 }}</v-list-tile-title>
-                                              <v-list-tile-sub-title>{{ i18n.stats.online }}</v-list-tile-sub-title>
+                                              <v-list-tile-sub-title>{{ $t('stats.online') }}</v-list-tile-sub-title>
                                           </v-list-tile-content>
                                       </v-list-tile>
                                       <v-list-tile>
@@ -263,7 +263,7 @@
                                           </v-list-tile-avatar>
                                           <v-list-tile-content>
                                               <v-list-tile-title>{{ stats.party || 0 }}</v-list-tile-title>
-                                              <v-list-tile-sub-title>{{ i18n.stats.party }}</v-list-tile-sub-title>
+                                              <v-list-tile-sub-title>{{ $t('stats.party') }}</v-list-tile-sub-title>
                                           </v-list-tile-content>
                                       </v-list-tile>
                                   </v-list>
@@ -285,8 +285,6 @@
 </template>
 
 <script>
-  import FR from '../lang/fr.js'
-  import EN from '../lang/en.js'
   import clipboard from 'clipboard'
   import qrious from 'qrious'
 
@@ -325,7 +323,6 @@
     },
     data: function () {
       return {
-        lang: 'en',
         validPseudo: true,
         dialogPseudo: true,
         myPseudo: "",
@@ -345,6 +342,9 @@
       }
     },
     methods: {
+        changeLocal: function (local) {
+            this.$i18n.locale = local
+        },
         setChoice: function (choice) {
             this.$socket.emit('choice', {choice})
             this.myChoice = choice
@@ -367,13 +367,11 @@
         }
     },
     computed: {
+        locale: function () {
+            return this.$i18n.locale
+        },
         sharedLink: function() {
             return location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/' + this.game.session
-        },
-        i18n: function () {
-          if (this.lang == 'fr')
-            return FR
-          return EN
         }
     },
     sockets:{
