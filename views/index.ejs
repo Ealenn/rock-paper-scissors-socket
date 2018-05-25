@@ -5,6 +5,7 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.1.0/css/flag-icon.min.css" integrity="sha256-D+ZpDJjhGxa5ffyQkuTvwii4AntFGBZa4jUhSpdlhjM=" crossorigin="anonymous" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <title>Rock Paper Scissors</title>
@@ -20,7 +21,7 @@
                     :bottom="true"
                     v-model="snackbar"
                 >
-                {{ haveChoice.pseudo }} have played
+                {{ haveChoice.pseudo }} {{ i18n.notification.text }}
                 </v-snackbar>
 
                 <!-- Pseudo-->
@@ -32,16 +33,36 @@
                         >
                         </v-card-media>
                         <v-card-title>
-                            <h3>Choose your username</h3>
+                            <h3>{{ i18n.username.title }}</h3>
                         </v-card-title>
 
                         <v-card-text style="padding-top:0">
+                                
+
+                                <v-container grid-list-md text-xs-center>
+                                    <v-layout row wrap>
+                                        <v-flex xs6>
+                                                <v-btn depressed :disabled="lang == 'fr'" @click="lang = 'fr'">
+                                                    <span class="flag-icon flag-icon-fr mr-2"></span>
+                                                    Français
+                                                </v-btn>
+                                        </v-flex>
+                                        <v-flex xs6>
+                                                <v-btn depressed :disabled="lang == 'en'" @click="lang = 'en'">
+                                                    <span class="flag-icon flag-icon-gb mr-2"></span>
+                                                    English
+                                                </v-btn>
+                                        </v-flex>
+                                    </v-layout>
+                                </v-container>
+
+
                                 <v-form ref="form" v-model="validPseudo" v-on:submit.prevent="changePseudo()" lazy-validation>
                                     <v-text-field
                                         v-model="myPseudo"
                                         :rules="[v => !!v || 'Name is required', v => v.length <= 10 || 'Name must be less than 10 characters']"
                                         counter="10"
-                                        label="Username"
+                                        :label="i18n.username.field"
                                         required
                                     ></v-text-field>
                                 
@@ -52,9 +73,9 @@
                                             :disabled="!validPseudo"
                                             @click="changePseudo()"
                                         >
-                                            Submit
+                                            {{ i18n.username.submit }}
                                         </v-btn>
-                                        <v-btn flat @click="myPseudo = ''">Clear</v-btn>
+                                        <v-btn flat @click="myPseudo = ''">{{ i18n.username.clear }}</v-btn>
                                     </div>
                                 </v-form>
                         </v-card-text>
@@ -83,7 +104,7 @@
                         <v-flex xs12 v-if="game.player.length == 1">
                             <v-card>
                                     <v-toolbar color="light-blue" dark flat>
-                                        <v-toolbar-title>Waiting for player</v-toolbar-title>
+                                        <v-toolbar-title>{{ i18n.await.title }}</v-toolbar-title>
                                         <v-spacer></v-spacer>
                                     </v-toolbar>
                                     
@@ -95,18 +116,17 @@
                                                     <img src="/img/spinner.gif" />
                                                   </v-avatar>
                                                 
-                                                <h4>Waiting for the player</h4>
+                                                <h4>{{ i18n.await.title }}</h4>
                                             </div>
 
                                             <hr>
 
-                                            <h3 class="headline">No player has joined you.</h3>
-                                            <div class="text-xs-center">To invite a friend, copy the link below or share it with the social buttons.</div>
-                                            <div class="text-xs-center">Warning, if you refresh or close the page a new link will be generated.</div>
+                                            <div class="text-xs-center">{{ i18n.await.invite }}</div>
+                                            <div class="text-xs-center">{{ i18n.await.warning }}</div>
                                             <div class="text-xs-center">
                                                     <v-tooltip top>
                                                         <v-btn slot="activator" depressed class="btn-copy-link" :data-clipboard-text="sharedLink">{{ sharedLink }}</v-btn>
-                                                        <span>Copy to clipboard</span>
+                                                        <span>{{ i18n.await.clipboard.description }}</span>
                                                     </v-tooltip>
                                             </div>
 
@@ -119,8 +139,8 @@
                                                 </a>
                                                 
                                                 <v-tooltip top>
-                                                    <v-btn slot="activator" depressed class="btn-copy-link white--text" :data-clipboard-text="sharedLink"  style="background:#3C3C3C">Clipboard</v-btn>
-                                                    <span>Copy to clipboard</span>
+                                                    <v-btn slot="activator" depressed class="btn-copy-link white--text" :data-clipboard-text="sharedLink"  style="background:#3C3C3C">{{ i18n.await.clipboard.title }}</v-btn>
+                                                    <span>{{ i18n.await.clipboard.description }}</span>
                                                 </v-tooltip>
                                             </div>
                                         </div>
@@ -134,7 +154,7 @@
                         <v-flex xs12 v-if="game.player.length == 1">
                             <v-card>
                                     <v-toolbar color="light-blue" dark flat>
-                                        <v-toolbar-title>Invite Player with QRCode</v-toolbar-title>
+                                        <v-toolbar-title>{{ i18n.qrcode.title }}</v-toolbar-title>
                                         <v-spacer></v-spacer>
                                     </v-toolbar>
                                     
@@ -142,7 +162,7 @@
                                         <div style="margin:auto">
                                             <canvas id="qr"></canvas>
                                             <hr>
-                                            <h4>Scan the QRCode for play with me !</h4>
+                                            <h4>{{ i18n.qrcode.description }}</h4>
                                         </div>
                                     </v-card-title>
                             </v-card>
@@ -152,22 +172,22 @@
                         <v-flex xs12 v-if="game.player.length == 2">
                             <v-card>
                                     <v-toolbar color="light-green" dark flat>
-                                        <v-toolbar-title>Game</v-toolbar-title>
+                                        <v-toolbar-title>{{ i18n.game.title }}</v-toolbar-title>
                                         <v-spacer></v-spacer>
                                     </v-toolbar>
 
                                     <!-- AWAIT/CONTINUE -->
                                     <div class="mt-5 mb-2" v-if="!showAction">
-                                            <h3 v-if="!results.win">Waiting for your opponent</h3>
+                                            <h3 v-if="!results.win">{{ i18n.game.waiting }}</h3>
                                             <v-layout row wrap>
 
                                                 <v-flex xs6 v-for="player in results.player" v-if="results.win">
-                                                    <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="me.idPlayer == player.idPlayer">Me</v-chip></h3>
+                                                    <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="me.idPlayer == player.idPlayer">{{ i18n.game.me }}</v-chip></h3>
                                                     <v-icon style="font-size: 7em">{{ getIcon(player.choice) }}</v-icon>
                                                 </v-flex>
 
                                                 <v-flex xs6 v-for="player in game.player" v-if="!results.win">
-                                                    <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="me.idPlayer == player.idPlayer">Me</v-chip></h3>
+                                                    <h3>{{ player.pseudo }}<v-chip color="primary" text-color="white" v-if="me.idPlayer == player.idPlayer">{{ i18n.game.me }}</v-chip></h3>
                                                     <v-icon style="font-size: 7em" v-if="me.idPlayer == player.idPlayer">{{ getIcon(myChoice) }}</v-icon>
                                                     <v-icon style="font-size: 7em" v-else>{{ blinkIcon }}</v-icon>
                                                 </v-flex>
@@ -175,11 +195,11 @@
                                                 <v-flex xs12 class="mt-5" v-if="results.win">
                                                     <h1>
                                                         <v-icon>fas fa-trophy</v-icon>
-                                                        {{ results.win }}
+                                                        {{ results.win[lang] }}
                                                         <v-icon>fas fa-trophy</v-icon>
                                                     </h1>
-                                                    <h2>{{ results.result }}</h2>
-                                                    <v-btn depressed large @click="setContinue()">CONTINUE</v-btn>
+                                                    <h2>{{ results.result[lang] }}</h2>
+                                                    <v-btn depressed large @click="setContinue()">{{ i18n.game.continue }}</v-btn>
                                                 </v-flex>
                                             </v-layout>
                                     </div>
@@ -187,7 +207,7 @@
                                     <!-- ACTION -->
                                     <div class="pb-3 pt-3" v-if="showAction">
 
-                                        <h2 class="mb-2">Choose an action</h2>
+                                        <h2 class="mb-2">{{ i18n.game.action.title }}</h2>
 
                                         <v-btn
                                         large
@@ -196,7 +216,7 @@
                                         class="white--text"
                                         @click="setChoice(0)"
                                         >
-                                            Rock
+                                            {{ i18n.game.action.rock }}
                                             <v-icon right dark>far fa-hand-rock</v-icon>
                                         </v-btn>
 
@@ -207,7 +227,7 @@
                                         class="white--text"
                                         @click="setChoice(1)"
                                         >
-                                        Paper
+                                            {{ i18n.game.action.paper }}
                                             <v-icon right dark>far fa-hand-paper</v-icon>
                                         </v-btn>
 
@@ -218,7 +238,7 @@
                                         class="white--text"
                                         @click="setChoice(2)"
                                         >
-                                            Scissors
+                                            {{ i18n.game.action.scissors }}
                                             <v-icon right dark>far fa-hand-scissors</v-icon>
                                         </v-btn>
                                     </div>
@@ -230,7 +250,7 @@
                         <v-flex xs12 sm6 v-if="game.player.length == 2">
                                 <v-card color="primary">
                                         <v-toolbar color="light-blue" dark flat>
-                                            <v-toolbar-title>Score</v-toolbar-title>
+                                            <v-toolbar-title>{{ i18n.stats.score }}</v-toolbar-title>
                                             <v-spacer></v-spacer>
                                         </v-toolbar>
                                         <v-list two-line subheader>
@@ -250,7 +270,7 @@
                             <v-flex sm6 v-if="game.player.length == 2">
                                 <v-card color="primary">
                                         <v-toolbar color="light-blue" dark flat>
-                                            <v-toolbar-title>All Party</v-toolbar-title>
+                                            <v-toolbar-title>{{ i18n.stats.allparty }}</v-toolbar-title>
                                             <v-spacer></v-spacer>
                                         </v-toolbar>
                                         <v-list two-line subheader>
@@ -260,7 +280,7 @@
                                                 </v-list-tile-avatar>
                                                 <v-list-tile-content>
                                                     <v-list-tile-title>{{ stats.players || 0 }}</v-list-tile-title>
-                                                    <v-list-tile-sub-title>players online</v-list-tile-sub-title>
+                                                    <v-list-tile-sub-title>{{ i18n.stats.online }}</v-list-tile-sub-title>
                                                 </v-list-tile-content>
                                             </v-list-tile>
                                             <v-list-tile>
@@ -269,7 +289,7 @@
                                                 </v-list-tile-avatar>
                                                 <v-list-tile-content>
                                                     <v-list-tile-title>{{ stats.party || 0 }}</v-list-tile-title>
-                                                    <v-list-tile-sub-title>Party active</v-list-tile-sub-title>
+                                                    <v-list-tile-sub-title>{{ i18n.stats.party }}</v-list-tile-sub-title>
                                                 </v-list-tile-content>
                                             </v-list-tile>
                                         </v-list>
@@ -304,6 +324,7 @@
         var App = new Vue({
         el: '#app',
             data: {
+                lang: 'en',
                 validPseudo: true,
                 dialogPseudo: true,
                 myPseudo: "",
@@ -356,6 +377,98 @@
             computed: {
                 sharedLink: function() {
                     return location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/' + this.game.session
+                },
+                i18n: function () {
+                    var fr = {
+                        notification: {
+                            text: 'a joué'
+                        },
+                        username: {
+                            title: 'Choisissez votre pseudo',
+                            field: 'Pseudo',
+                            submit: 'Envoyer',
+                            clear: 'Effacer'
+                        },
+                        await: {
+                            title: 'En attente d\'un joueur',
+                            invite: 'Pour inviter vos amis, cliquez sur le lien ci-dessous pour le copier ou partagez le sur les réseaux sociaux.',
+                            warning: 'ATTENTION : Si vous actualisez la page, un nouveau lien sera généré !',
+                            clipboard: {
+                                title: 'Presse papier',
+                                description: 'Copier dans le presse papier'
+                            }
+                        },
+                        qrcode: {
+                            title: 'Inviter via QRCode',
+                            description: 'Scanne le QRCode pour me rejoindre'
+                        },
+                        game: {
+                            title: 'Jeu',
+                            waiting: 'En attente de votre adversaire',
+                            me: 'Moi',
+                            continue: 'CONTINUER',
+                            action: {
+                                title: 'Choisissez une action',
+                                rock: 'Pierre',
+                                paper: 'Feuille',
+                                scissors: 'Ciseaux'
+                            }
+                        },
+                        stats: {
+                            score: 'Score',
+                            allparty: 'Toutes partie',
+                            online: 'joueurs en ligne',
+                            party: 'parties active'
+                        }
+                    }
+
+                    var en = {
+                        notification: {
+                            text: 'have played'
+                        },
+                        username: {
+                            title: 'Choose your username',
+                            field: 'Username',
+                            submit: 'Submit',
+                            clear: 'Clear'
+                        },
+                        await: {
+                            title: 'Waiting for player',
+                            invite: 'To invite a friend, copy the link below or share it with the social buttons.',
+                            warning: 'WARNING, if you refresh or close the page a new link will be generated !',
+                            clipboard: {
+                                title: 'Clipboard',
+                                description: 'Copy to clipboard'
+                            }
+                        },
+                        qrcode: {
+                            title: 'Invite Player with QRCode',
+                            description: 'Scan the QRCode for play with me !'
+                        },
+                        game: {
+                            title: 'Game',
+                            waiting: 'Waiting for your opponent',
+                            me: 'Me',
+                            continue: 'CONTINUE',
+                            action: {
+                                title: 'Choose an action',
+                                rock: 'Rock',
+                                paper: 'Paper',
+                                scissors: 'Scissors'
+                            }
+                        },
+                        stats: {
+                            score: 'Score',
+                            allparty: 'All party',
+                            online: 'players online',
+                            party: 'party active'
+                        }
+                    }
+
+                    if (this.lang == 'fr')
+                        return fr
+                    
+                    return en
                 }
             }
         })
@@ -413,7 +526,15 @@
             App.$data.results = data
             App.$data.showContinue = true
         })
+    </script>
 
+    <!-- Handle Close Window-->
+    <script>
+    window.addEventListener("beforeunload", function (e) {
+        var confirmationMessage = "\o/";
+        e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
+        return confirmationMessage;              // Gecko, WebKit, Chrome <34
+    });
     </script>
 </body>
 </html>

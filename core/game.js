@@ -43,8 +43,8 @@ class Game {
         localPlayer.push(JSON.parse(JSON.stringify(this.players[1])))
 
         let results = {
-            win: '',
-            result: '',
+            win: {},
+            result: {},
             player: localPlayer
         }
 
@@ -53,17 +53,24 @@ class Game {
                 switch (localPlayer[1].choice) {
                     case ROCK:
                         this.playerEgality()
-                        results.win = "Egality !"
+                        results.win.en = "Egality !"
+                        results.win.fr = "Egalité !"
                     break;
                     case PAPER:
                         this.playerWin(localPlayer[1].idPlayer)
-                        results.win = localPlayer[1].pseudo
-                        results.result = 'The sheet covers the stone'
+                        results.win.en = localPlayer[1].pseudo
+                        results.win.fr = localPlayer[1].pseudo
+
+                        results.result.en = 'The sheet covers the stone'
+                        results.result.fr = 'La feuille couvre la pierre'
                     break;
                     case SCISSORS:
                         this.playerWin(localPlayer[0].idPlayer)
-                        results.win = localPlayer[0].pseudo
-                        results.result = 'The stone breaks the scissors'
+                        results.win.en = localPlayer[0].pseudo
+                        results.win.fr = localPlayer[0].pseudo
+
+                        results.result.en = 'The stone breaks the scissors'
+                        results.result.fr = 'La pierre brise les ciseaux'
                     break;
                 }
             break;
@@ -71,17 +78,24 @@ class Game {
                 switch (localPlayer[1].choice) {
                     case ROCK:
                         this.playerWin(localPlayer[0].idPlayer)
-                        results.win = localPlayer[0].pseudo
-                        results.result = 'The sheet covers the stone'
+                        results.win.en = localPlayer[0].pseudo
+                        results.win.fr = localPlayer[0].pseudo
+
+                        results.result.en = 'The sheet covers the stone'
+                        results.result.fr = 'La feuille couvre la pierre'
                     break;
                     case PAPER:
                         this.playerEgality()
-                        results.win = "Egality !"
+                        results.win.en = "Egality !"
+                        results.win.fr = "Egalité !"
                     break;
                     case SCISSORS:
                         this.playerWin(localPlayer[1].idPlayer)
-                        results.win = localPlayer[1].pseudo
-                        results.result = 'Scissors cut the sheet'
+                        results.win.en = localPlayer[1].pseudo
+                        results.win.fr = localPlayer[1].pseudo
+
+                        results.result.en = 'Scissors cut the sheet'
+                        results.result.fr = 'Les ciseaux coupent la feuille'
                     break;
                 }
             break;
@@ -89,17 +103,24 @@ class Game {
                 switch (localPlayer[1].choice) {
                     case ROCK:
                         this.playerWin(localPlayer[1].idPlayer)
-                        results.win = localPlayer[1].pseudo
-                        results.result = 'The stone breaks the scissors'
+                        results.win.en = localPlayer[1].pseudo
+                        results.win.fr = localPlayer[1].pseudo
+
+                        results.result.en = 'The stone breaks the scissors'
+                        results.result.fr = 'La pierre brise les ciseaux'
                     break;
                     case PAPER:
                         this.playerWin(localPlayer[0].idPlayer)
-                        results.win = localPlayer[0].idPlayer
-                        results.result = 'Scissors cut the sheet'
+                        results.win.en = localPlayer[0].pseudo
+                        results.win.fr = localPlayer[0].pseudo
+                        
+                        results.result.en = 'Scissors cut the sheet'
+                        results.result.fr = 'Les ciseaux coupent la feuille'
                     break;
                     case SCISSORS:
                         this.playerEgality()
-                        results.win = "Egality !"
+                        results.win.en = "Egality !"
+                        results.win.fr = "Egalité !"
                     break;
                 }
             break;
