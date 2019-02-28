@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './vue/App.vue'
 import Vuetify from 'vuetify'
-import VueSocketio from 'vue-socket.io'
+import VueSocketIO from 'vue-socket.io'
 import 'vuetify/dist/vuetify.css'
 
 /* Translate */
@@ -16,7 +16,10 @@ const i18n = new VueI18n({
 
 /* Vue */
 Vue.use(Vuetify)
-Vue.use(VueSocketio, (location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')))
+Vue.use(new VueSocketIO({
+  debug: false,
+  connection: location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
+}))
 
 new Vue({
   i18n,
