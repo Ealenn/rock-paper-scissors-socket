@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node app.js",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --inline --hot",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "heroku-postbuild": "npm run build"
   },
   "author": "Rudy Marchandise",
   "license": "ISC",
